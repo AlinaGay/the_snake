@@ -1,4 +1,4 @@
-from random import choice, randint
+from random import choice
 from typing import Optional
 
 import pygame
@@ -55,10 +55,11 @@ class GameObject:
 class Snake(GameObject):
     """Class that describes the snake."""
 
-    def __init__(self):
-        self.positions = [((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))]
+    def __init__(self) -> None:
+        super().__init__()
+        self.positions = [self.position]
         self.length = len(self.positions)
-        self.last = self.positions[-1]
+        self.last = None
         self.direction = RIGHT
         self.next_direction = None
         self.body_color = SNAKE_COLOR
@@ -72,13 +73,15 @@ class Snake(GameObject):
 
     def move(self):
         """Public method for moving the snake."""
-        if self.direction:
-            for seg in self.positions:
-                seg_list = list(seg)
-                seg_list[0] = seg_list[0] + self.direction[0]
-                seg_list[1] = seg_list[1] + self.direction[1]
-                seg = tuple(seg_list)
-        return self.positions
+        current_head_x, current_head_y = self.get_head_position()
+        self.update_direction()
+        new_head_x = (
+            (current_head_x + self.direction[0] * GRID_SIZE) % SCREEN_WIDTH)
+        new_head_y = (
+            (current_head_y + self.direction[1] * GRID_SIZE) % SCREEN_WIDTH)
+        new_head = (new_head_x, new_head_y)
+        self.positions.insert(0, new_head)
+        self.last = self.positions.pop()
 
     def draw(self):
         """Public method that draws the snake."""
@@ -93,13 +96,18 @@ class Snake(GameObject):
         pygame.draw.rect(screen, BORDER_COLOR, head_rect, 1)
 
         # Removing the last segment
-        """ if self.last:
+        if self.last:
             last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
-            pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect) """
+            pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
 
     def get_head_position(self):
         """Public method that returns the head position."""
         return self.positions[0]
+
+    def get_longer(self):
+        """Public method that adds segments to the snake."""
+        self.positions.insert(0, self.get_head_position())
+        self.length += 1
 
 
 class Apple(GameObject):
@@ -152,14 +160,15 @@ def main():
     while True:
         clock.tick(SPEED)
         handle_keys(snake)
+        snake.move()
+
+        if apple.position == snake.get_head_position():
+            snake.get_longer()
+            apple.randomize_position()
+
         apple.draw()
         snake.draw()
-        snake.update_direction()
-        snake.move()
         pygame.display.update()
-
-        # Тут опишите основную логику игры.
-        # ...
 
 
 if __name__ == '__main__':
