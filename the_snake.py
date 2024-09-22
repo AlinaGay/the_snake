@@ -14,6 +14,7 @@ UP = (0, -1)
 DOWN = (0, 1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
+DIRECTION_LIST = [UP, DOWN, LEFT, RIGHT]
 
 # Цвет фона - черный:
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
@@ -22,13 +23,13 @@ BOARD_BACKGROUND_COLOR = (0, 0, 0)
 BORDER_COLOR = (93, 216, 228)
 
 # Цвет яблока
-APPLE_COLOR = (255, 0, 0)
+APPLE_COLOR = (255, 92, 126)
 
 # Цвет змейки
-SNAKE_COLOR = (0, 255, 0)
+SNAKE_COLOR = (255, 190, 103)
 
 # Скорость движения змейки:
-SPEED = 20
+SPEED = 10
 
 # Настройка игрового окна:
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -58,7 +59,7 @@ class Snake(GameObject):
     def __init__(self) -> None:
         super().__init__()
         self.positions = [self.position]
-        self.length = len(self.positions)
+        self.length = 1
         self.last = None
         self.direction = RIGHT
         self.next_direction = None
@@ -74,7 +75,6 @@ class Snake(GameObject):
     def move(self):
         """Public method for moving the snake."""
         current_head_x, current_head_y = self.get_head_position()
-        self.update_direction()
         new_head_x = (
             (current_head_x + self.direction[0] * GRID_SIZE) % SCREEN_WIDTH)
         new_head_y = (
@@ -108,6 +108,13 @@ class Snake(GameObject):
         """Public method that adds segments to the snake."""
         self.positions.insert(0, self.get_head_position())
         self.length += 1
+
+    def reset(self):
+        """Public method that returns the snake to an initial state."""
+        screen.fill(BOARD_BACKGROUND_COLOR)
+        self.positions = [self.position]
+        self.length = 1
+        self.direction = choice(DIRECTION_LIST)
 
 
 class Apple(GameObject):
@@ -160,10 +167,15 @@ def main():
     while True:
         clock.tick(SPEED)
         handle_keys(snake)
+        snake.update_direction()
         snake.move()
 
         if apple.position == snake.get_head_position():
             snake.get_longer()
+            apple.randomize_position()
+
+        if snake.get_head_position() == snake.last:
+            snake.reset()
             apple.randomize_position()
 
         apple.draw()
