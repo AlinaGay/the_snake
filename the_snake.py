@@ -3,41 +3,41 @@ from typing import Optional
 
 import pygame
 
-# Константы для размеров поля и сетки:
+# Constants for the field and grid sizes:
 SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
 GRID_SIZE = 20
 GRID_WIDTH = SCREEN_WIDTH // GRID_SIZE
 GRID_HEIGHT = SCREEN_HEIGHT // GRID_SIZE
 
-# Направления движения:
+# Direction of movement:
 UP = (0, -1)
 DOWN = (0, 1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
 DIRECTION_LIST = [UP, DOWN, LEFT, RIGHT]
 
-# Цвет фона - черный:
+# Background color: black
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
 
-# Цвет границы ячейки
+# Color of the cell border
 BORDER_COLOR = (93, 216, 228)
 
-# Цвет яблока
+# Color of the apple
 APPLE_COLOR = (255, 92, 126)
 
-# Цвет змейки
+# Color of the snake
 SNAKE_COLOR = (255, 190, 103)
 
-# Скорость движения змейки:
+# Snake speed:
 SPEED = 10
 
-# Настройка игрового окна:
+# Settings for the playground window:
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 
-# Заголовок окна игрового поля:
+# Head name of the playground window:
 pygame.display.set_caption('Змейка')
 
-# Настройка времени:
+# Time settings:
 clock = pygame.time.Clock()
 
 
@@ -158,9 +158,7 @@ def handle_keys(game_object):
 
 def main():
     """Public function that describes the whole game"""
-    # Инициализация PyGame:
     pygame.init()
-    # Тут нужно создать экземпляры классов.
     apple = Apple()
     snake = Snake()
 
