@@ -33,7 +33,7 @@ git clone https://github.com/AlinaGay/the_snake.git
 ```
 cd the_snake
 ```
-3. Open the the_snake.py file in your web browser and press 'run' to start playing!
+3. Open the the_snake.py file in your code editor (VSCode, PyCharm, etc.) and press 'run' to start playing!
 
 ## Usage
 Simply run the the_snake.py file in any code editor (VSCode, PyCharm, etc.). The playground will load automatically, and you can start playing right away.
