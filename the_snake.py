@@ -1,13 +1,14 @@
 from random import choice
 from typing import Optional
 
-import pygame
+import pygame as pg
 
 # Constants for the field and grid sizes:
 SCREEN_WIDTH, SCREEN_HEIGHT = 640, 480
 GRID_SIZE = 20
 GRID_WIDTH = SCREEN_WIDTH // GRID_SIZE
 GRID_HEIGHT = SCREEN_HEIGHT // GRID_SIZE
+MID_OF_SCREEN = (SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)
 
 # Direction of movement:
 UP = (0, -1)
@@ -32,25 +33,26 @@ SNAKE_COLOR = (255, 190, 103)
 SPEED = 10
 
 # Settings for the playground window:
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
+screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 
 # Head name of the playground window:
-pygame.display.set_caption('Змейка')
+pg.display.set_caption('Змейка')
 
 # Time settings:
-clock = pygame.time.Clock()
+clock = pg.time.Clock()
 
 
 class GameObject:
     """Class that describes the playing object."""
 
-    def __init__(self) -> None:
-        self.position = (SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)
-        self.body_color: Optional[tuple[int, int, int]] = None
+    def __init__(self, position=MID_OF_SCREEN, body_color=None) -> None:
+        self.position = position
+        self.body_color: Optional[tuple[int, int, int]] = body_color
 
     def draw(self):
         """Public method that draws the playing object."""
-        pass
+        raise NotImplementedError('Please, write the '
+                                  'method for children class.')
 
 
 class Snake(GameObject):
@@ -86,19 +88,19 @@ class Snake(GameObject):
     def draw(self):
         """Public method that draws the snake."""
         for position in self.positions[:-1]:
-            rect = (pygame.Rect(position, (GRID_SIZE, GRID_SIZE)))
-            pygame.draw.rect(screen, self.body_color, rect)
-            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+            rect = (pg.Rect(position, (GRID_SIZE, GRID_SIZE)))
+            pg.draw.rect(screen, self.body_color, rect)
+            pg.draw.rect(screen, BORDER_COLOR, rect, 1)
 
         # Drawing a head of the snake
-        head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(screen, self.body_color, head_rect)
-        pygame.draw.rect(screen, BORDER_COLOR, head_rect, 1)
+        head_rect = pg.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
+        pg.draw.rect(screen, self.body_color, head_rect)
+        pg.draw.rect(screen, BORDER_COLOR, head_rect, 1)
 
         # Removing the last segment
         if self.last:
-            last_rect = pygame.Rect(self.last, (GRID_SIZE, GRID_SIZE))
-            pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
+            last_rect = pg.Rect(self.last, (GRID_SIZE, GRID_SIZE))
+            pg.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
 
     def get_head_position(self):
         """Public method that returns the head position."""
@@ -111,7 +113,6 @@ class Snake(GameObject):
 
     def reset(self):
         """Public method that returns the snake to an initial state."""
-        screen.fill(BOARD_BACKGROUND_COLOR)
         self.positions = [self.position]
         self.length = 1
         self.direction = choice(DIRECTION_LIST)
@@ -126,9 +127,9 @@ class Apple(GameObject):
 
     def draw(self):
         """Public method that draws the apple."""
-        rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(screen, self.body_color, rect)
-        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+        rect = pg.Rect(self.position, (GRID_SIZE, GRID_SIZE))
+        pg.draw.rect(screen, self.body_color, rect)
+        pg.draw.rect(screen, BORDER_COLOR, rect, 1)
 
     def randomize_position(self):
         """Public method that sets the apple position"""
@@ -136,29 +137,28 @@ class Apple(GameObject):
         x = choice(range(0, 640, 20))
         y = choice(range(0, 480, 20))
         self.position = (x, y)
-        return self.position
 
 
 def handle_keys(game_object):
     """Public function for processing of user activity"""
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
+    for event in pg.event.get():
+        if event.type == pg.QUIT:
+            pg.quit()
             raise SystemExit
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP and game_object.direction != DOWN:
+        elif event.type == pg.KEYDOWN:
+            if event.key == pg.K_UP and game_object.direction != DOWN:
                 game_object.next_direction = UP
-            elif event.key == pygame.K_DOWN and game_object.direction != UP:
+            elif event.key == pg.K_DOWN and game_object.direction != UP:
                 game_object.next_direction = DOWN
-            elif event.key == pygame.K_LEFT and game_object.direction != RIGHT:
+            elif event.key == pg.K_LEFT and game_object.direction != RIGHT:
                 game_object.next_direction = LEFT
-            elif event.key == pygame.K_RIGHT and game_object.direction != LEFT:
+            elif event.key == pg.K_RIGHT and game_object.direction != LEFT:
                 game_object.next_direction = RIGHT
 
 
 def main():
     """Public function that describes the whole game"""
-    pygame.init()
+    pg.init()
     apple = Apple()
     snake = Snake()
 
@@ -172,13 +172,14 @@ def main():
             snake.get_longer()
             apple.randomize_position()
 
-        if snake.get_head_position() == snake.last:
+        elif snake.get_head_position() == snake.last:
+            screen.fill(BOARD_BACKGROUND_COLOR)
             snake.reset()
             apple.randomize_position()
 
         apple.draw()
         snake.draw()
-        pygame.display.update()
+        pg.display.update()
 
 
 if __name__ == '__main__':
