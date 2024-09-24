@@ -45,14 +45,15 @@ clock = pg.time.Clock()
 class GameObject:
     """Class that describes the playing object."""
 
-    def __init__(self, position=MID_OF_SCREEN, body_color=None) -> None:
-        self.position = position
-        self.body_color: Optional[tuple[int, int, int]] = body_color
+    def __init__(self) -> None:
+        self.position = MID_OF_SCREEN
+        self.body_color: Optional[tuple[int, int, int]] = None
 
-    def draw(self):
+    def draw(self, position, body_color=None, border_color=None):
         """Public method that draws the playing object."""
-        raise NotImplementedError('Please, write the '
-                                  'method for children class.')
+        rect = (pg.Rect(position, (GRID_SIZE, GRID_SIZE)))
+        pg.draw.rect(screen, body_color, rect)
+        pg.draw.rect(screen, border_color, rect, 1)
 
 
 class Snake(GameObject):
@@ -88,19 +89,15 @@ class Snake(GameObject):
     def draw(self):
         """Public method that draws the snake."""
         for position in self.positions[:-1]:
-            rect = (pg.Rect(position, (GRID_SIZE, GRID_SIZE)))
-            pg.draw.rect(screen, self.body_color, rect)
-            pg.draw.rect(screen, BORDER_COLOR, rect, 1)
+            super().draw(position, SNAKE_COLOR, BORDER_COLOR)
 
         # Drawing a head of the snake
-        head_rect = pg.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
-        pg.draw.rect(screen, self.body_color, head_rect)
-        pg.draw.rect(screen, BORDER_COLOR, head_rect, 1)
+        super().draw(self.positions[0], SNAKE_COLOR, BORDER_COLOR)
 
         # Removing the last segment
         if self.last:
-            last_rect = pg.Rect(self.last, (GRID_SIZE, GRID_SIZE))
-            pg.draw.rect(screen, BOARD_BACKGROUND_COLOR, last_rect)
+            super().draw(self.last, BOARD_BACKGROUND_COLOR,
+                         BOARD_BACKGROUND_COLOR)
 
     def get_head_position(self):
         """Public method that returns the head position."""
@@ -113,6 +110,7 @@ class Snake(GameObject):
 
     def reset(self):
         """Public method that returns the snake to an initial state."""
+        screen.fill(BOARD_BACKGROUND_COLOR)
         self.positions = [self.position]
         self.length = 1
         self.direction = choice(DIRECTION_LIST)
@@ -127,9 +125,7 @@ class Apple(GameObject):
 
     def draw(self):
         """Public method that draws the apple."""
-        rect = pg.Rect(self.position, (GRID_SIZE, GRID_SIZE))
-        pg.draw.rect(screen, self.body_color, rect)
-        pg.draw.rect(screen, BORDER_COLOR, rect, 1)
+        super().draw(self.position, APPLE_COLOR, BORDER_COLOR)
 
     def randomize_position(self):
         """Public method that sets the apple position"""
@@ -137,6 +133,7 @@ class Apple(GameObject):
         x = choice(range(0, 640, 20))
         y = choice(range(0, 480, 20))
         self.position = (x, y)
+        return self.position
 
 
 def handle_keys(game_object):
@@ -172,8 +169,7 @@ def main():
             snake.get_longer()
             apple.randomize_position()
 
-        elif snake.get_head_position() == snake.last:
-            screen.fill(BOARD_BACKGROUND_COLOR)
+        if snake.get_head_position() == snake.last:
             snake.reset()
             apple.randomize_position()
 
