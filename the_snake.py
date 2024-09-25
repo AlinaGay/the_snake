@@ -62,7 +62,6 @@ class Snake(GameObject):
     def __init__(self) -> None:
         super().__init__()
         self.positions = [self.position]
-        self.length = 1
         self.last = None
         self.direction = RIGHT
         self.next_direction = None
@@ -105,14 +104,13 @@ class Snake(GameObject):
 
     def get_longer(self):
         """Public method that adds segments to the snake."""
-        self.positions.insert(0, self.get_head_position())
-        self.length += 1
+        self.positions.append(self.last)
+        self.last = None
 
     def reset(self):
         """Public method that returns the snake to an initial state."""
         screen.fill(BOARD_BACKGROUND_COLOR)
         self.positions = [self.position]
-        self.length = 1
         self.direction = choice(DIRECTION_LIST)
 
 
