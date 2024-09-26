@@ -66,6 +66,7 @@ class Snake(GameObject):
         self.direction = RIGHT
         self.next_direction = None
         self.body_color = SNAKE_COLOR
+        self.filled_positions = self.positions
 
     def update_direction(self):
         """Public method that updates the direction"""
@@ -128,9 +129,13 @@ class Apple(GameObject):
     def randomize_position(self):
         """Public method that sets the apple position"""
         """randomly on the playing field."""
-        x = choice(range(0, 640, 20))
-        y = choice(range(0, 480, 20))
-        self.position = (x, y)
+        apple_position_x = choice(range(0, 640, 20))
+        apple_position_y = choice(range(0, 480, 20))
+        while (apple_position_x, apple_position_y) in Snake().positions:
+            apple_position_x = choice(range(0, 640, 20))
+            apple_position_y = choice(range(0, 480, 20))
+        else:
+            self.position = (apple_position_x, apple_position_y)
         return self.position
 
 
@@ -149,6 +154,9 @@ def handle_keys(game_object):
                 game_object.next_direction = LEFT
             elif event.key == pg.K_RIGHT and game_object.direction != LEFT:
                 game_object.next_direction = RIGHT
+            elif event.key == pg.K_ESCAPE:
+                pg.quit()
+                raise SystemExit
 
 
 def main():
@@ -167,7 +175,7 @@ def main():
             snake.get_longer()
             apple.randomize_position()
 
-        if snake.get_head_position() == snake.last:
+        elif snake.get_head_position() in snake.positions[4:]:
             snake.reset()
             apple.randomize_position()
 
