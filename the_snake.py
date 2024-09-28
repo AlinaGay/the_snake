@@ -62,7 +62,7 @@ class GameObject:
 class Snake(GameObject):
     """Class that describes the snake."""
 
-    def __init__(self) -> None:
+    def __init__(self, position=MID_OF_SCREEN, body_color=SNAKE_COLOR) -> None:
         super().__init__(MID_OF_SCREEN, SNAKE_COLOR)
         self.positions = [self.position]
         self.last = None
