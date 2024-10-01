@@ -139,7 +139,7 @@ class Apple(GameObject):
             self.position = (apple_position_x, apple_position_y)
             if self.position not in filled_positions:
                 break
-        # return self.position
+        return self.position
 
 
 def handle_keys(game_object):
