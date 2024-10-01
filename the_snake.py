@@ -119,9 +119,11 @@ class Snake(GameObject):
 class Apple(GameObject):
     """Class that describes the apple."""
 
-    def __init__(self, filled_positions=MID_OF_SCREEN):
-        super().__init__(self.randomize_position(filled_positions),
+    def __init__(self, position=(SCREEN_WIDTH, SCREEN_HEIGHT),
+                 body_color=APPLE_COLOR, filled_positions=MID_OF_SCREEN):
+        super().__init__((SCREEN_WIDTH, SCREEN_HEIGHT),
                          APPLE_COLOR)
+        self.position = self.randomize_position(filled_positions)
         self.filled_positions = filled_positions
 
     def draw(self):
@@ -137,15 +139,7 @@ class Apple(GameObject):
             self.position = (apple_position_x, apple_position_y)
             if self.position not in filled_positions:
                 break
-        return self.position
-        """ apple_position_x = choice(range(0, SCREEN_WIDTH, GRID_SIZE))
-        apple_position_y = choice(range(0, SCREEN_HEIGHT, GRID_SIZE))
-        while (apple_position_x, apple_position_y) in Snake().positions:
-            apple_position_x = choice(range(0, SCREEN_WIDTH, GRID_SIZE))
-            apple_position_y = choice(range(0, SCREEN_HEIGHT, GRID_SIZE))
-        else:
-            self.position = (apple_position_x, apple_position_y)
-        return self.position """
+        # return self.position
 
 
 def handle_keys(game_object):
@@ -172,8 +166,7 @@ def main():
     """Public function that describes the whole game"""
     pg.init()
     snake = Snake()
-    filled_positions = snake.positions
-    apple = Apple(filled_positions)
+    apple = Apple(snake.positions)
 
     while True:
         clock.tick(SPEED)
@@ -183,14 +176,12 @@ def main():
 
         if apple.position == snake.get_head_position():
             snake.get_longer()
-            filled_positions = snake.positions
-            apple.randomize_position(filled_positions)
+            apple.randomize_position(snake.positions)
 
         elif snake.get_head_position() in snake.positions[4:]:
             screen.fill(BOARD_BACKGROUND_COLOR)
             snake.reset()
-            filled_positions = snake.positions
-            apple.randomize_position(filled_positions)
+            apple.randomize_position(snake.positions)
 
         apple.draw()
         snake.draw()
