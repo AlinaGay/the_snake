@@ -89,16 +89,13 @@ class Snake(GameObject):
 
     def draw(self):
         """Public method that draws the snake."""
-        for position in self.positions[:-1]:
-            super().draw_cell(position, SNAKE_COLOR, BORDER_COLOR)
-
         # Drawing a head of the snake
-        super().draw_cell(self.positions[0], SNAKE_COLOR, BORDER_COLOR)
+        self.draw_cell(self.positions[0], SNAKE_COLOR, BORDER_COLOR)
 
         # Removing the last segment
         if self.last:
-            super().draw_cell(self.last, BOARD_BACKGROUND_COLOR,
-                              BOARD_BACKGROUND_COLOR)
+            self.draw_cell(self.last, BOARD_BACKGROUND_COLOR,
+                           BOARD_BACKGROUND_COLOR)
 
     def get_head_position(self):
         """Public method that returns the head position."""
@@ -120,15 +117,14 @@ class Apple(GameObject):
     """Class that describes the apple."""
 
     def __init__(self, position=(SCREEN_WIDTH, SCREEN_HEIGHT),
-                 body_color=APPLE_COLOR, filled_positions=MID_OF_SCREEN):
+                 body_color=APPLE_COLOR, filled_positions=[]):
         super().__init__((SCREEN_WIDTH, SCREEN_HEIGHT),
                          APPLE_COLOR)
-        self.position = self.randomize_position(filled_positions)
-        self.filled_positions = filled_positions
+        self.randomize_position(filled_positions)
 
     def draw(self):
         """Public method that draws the apple."""
-        super().draw_cell(self.position, APPLE_COLOR, BORDER_COLOR)
+        self.draw_cell(self.position, APPLE_COLOR, BORDER_COLOR)
 
     def randomize_position(self, filled_positions):
         """Public method that sets the apple position"""
@@ -139,7 +135,6 @@ class Apple(GameObject):
             self.position = (apple_position_x, apple_position_y)
             if self.position not in filled_positions:
                 break
-        return self.position
 
 
 def handle_keys(game_object):
